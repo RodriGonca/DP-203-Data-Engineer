@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "Copy From Mongo",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -17,6 +17,15 @@
 				"typeProperties": {
 					"source": {
 						"type": "MongoDbAtlasSource",
+						"additionalColumns": [
+							{
+								"name": "time_stamp_pipeline",
+								"value": {
+									"value": "@utcnow()",
+									"type": "Expression"
+								}
+							}
+						],
 						"batchSize": 100
 					},
 					"sink": {
