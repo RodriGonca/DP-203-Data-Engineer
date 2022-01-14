@@ -5,6 +5,9 @@
 		"workspaceName": {
 			"value": "asaworkspacem3hx41t"
 		},
+		"DeeployerMongoAtlas_connectionString": {
+			"value": ""
+		},
 		"asadatalakem3hx41t_accountKey": {
 			"value": ""
 		},
@@ -16,6 +19,9 @@
 		},
 		"sqlpool01_connectionString": {
 			"value": ""
+		},
+		"DeeployerMongoAtlas_properties_typeProperties_database": {
+			"value": "open_data_gov"
 		},
 		"asadatalakem3hx41t_properties_typeProperties_url": {
 			"value": "https://asadatalakem3hx41t.dfs.core.windows.net"
