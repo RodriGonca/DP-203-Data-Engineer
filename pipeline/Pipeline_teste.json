@@ -38,7 +38,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "BumJson",
+						"referenceName": "DumpJson",
 						"type": "DatasetReference"
 					}
 				]

@@ -1,5 +1,5 @@
 {
-	"name": "BumJson",
+	"name": "DumpJson",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "asastorem3hx41t",
