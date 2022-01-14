@@ -1,8 +1,8 @@
 {
-	"name": "SQL script 1",
+	"name": "SQL Playground",
 	"properties": {
 		"content": {
-			"query": "Select * \"Hello Word !!!\"",
+			"query": "select top 10 *\nfrom openrowset(\n    bulk 'https://pandemicdatalake.blob.core.windows.net/public/curated/covid-19/ecdc_cases/latest/ecdc_cases.csv',\n    format = 'csv',\n    parser_version = '2.0',\n    firstrow = 2 ) as rows",
 			"metadata": {
 				"language": "sql"
 			},
