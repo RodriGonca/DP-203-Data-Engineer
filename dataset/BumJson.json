@@ -2,14 +2,15 @@
 	"name": "BumJson",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "asaworkspacem3hx41t-WorkspaceDefaultStorage",
+			"referenceName": "asastorem3hx41t",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation"
+				"type": "AzureBlobStorageLocation",
+				"container": "test"
 			}
 		},
 		"schema": {}
