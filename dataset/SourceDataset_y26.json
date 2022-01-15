@@ -1,0 +1,163 @@
+{
+	"name": "SourceDataset_y26",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "asastorem3hx41t",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "data_0b455528-ef2c-4e8e-bb28-efe3c239348d_9f838fe4-b4f0-41e6-a0bd-b4a2facc6279.json",
+				"container": "test"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"_id": {
+					"type": "object",
+					"properties": {
+						"$oid": {
+							"type": "string"
+						}
+					}
+				},
+				"source": {
+					"type": "string"
+				},
+				"params": {
+					"type": "object",
+					"properties": {
+						"page": {
+							"type": "integer"
+						}
+					}
+				},
+				"page": {
+					"type": "integer"
+				},
+				"time_stamp_main": {
+					"type": "object",
+					"properties": {
+						"$date": {
+							"type": "integer"
+						}
+					}
+				},
+				"response_time_main": {
+					"type": "number"
+				},
+				"dataset_sequence": {
+					"type": "integer"
+				},
+				"dataset_name": {
+					"type": "string"
+				},
+				"dataset_description": {
+					"type": "string"
+				},
+				"dataset_link": {
+					"type": "string"
+				},
+				"dataset_tags": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"fonte": {
+					"type": "string"
+				},
+				"ultima atualizacao": {
+					"type": "object",
+					"properties": {
+						"$date": {
+							"type": "integer"
+						}
+					}
+				},
+				"criado": {
+					"type": "object",
+					"properties": {
+						"$date": {
+							"type": "integer"
+						}
+					}
+				},
+				"sources": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"title": {
+								"type": "string"
+							},
+							"link": {
+								"type": "string"
+							},
+							"data_format": {
+								"type": "string"
+							},
+							"description": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"number of sources": {
+					"type": "integer"
+				},
+				"organization": {
+					"type": "string"
+				},
+				"org_img_url": {
+					"type": "string"
+				},
+				"followers": {
+					"type": "integer"
+				},
+				"response_time": {
+					"type": "number"
+				},
+				"time_stamp": {
+					"type": "object",
+					"properties": {
+						"$date": {
+							"type": "integer"
+						}
+					}
+				},
+				"time_stamp_pipeline": {
+					"type": "string"
+				},
+				"autor": {
+					"type": "string"
+				},
+				"mantenedor": {
+					"type": "string"
+				},
+				"versao": {
+					"type": "string"
+				},
+				"spatial": {
+					"type": "string"
+				},
+				"orgao - esfera": {
+					"type": "string"
+				},
+				"orgao - poder": {
+					"type": "string"
+				},
+				"atualizacao": {
+					"type": "string"
+				},
+				"vcge": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}
