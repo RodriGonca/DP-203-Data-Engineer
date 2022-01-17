@@ -49,6 +49,381 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/CopyPipeline_y26')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_y26",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "test//data_0b455528-ef2c-4e8e-bb28-efe3c239348d_9f838fe4-b4f0-41e6-a0bd-b4a2facc6279.json"
+							},
+							{
+								"name": "Destination",
+								"value": "teste"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "MongoDbV2Sink",
+								"writeBatchTimeout": "00:30:00",
+								"writeBehavior": "insert"
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_y26",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_y26",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/SourceDataset_y26')]",
+				"[concat(variables('workspaceId'), '/datasets/DestinationDataset_y26')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Pipeline_teste')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy From Mongo",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "MongoDbAtlasSource",
+								"additionalColumns": [
+									{
+										"name": "time_stamp_pipeline",
+										"value": {
+											"value": "@utcnow()",
+											"type": "Expression"
+										}
+									}
+								],
+								"batchSize": 100
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "MongoDB_OpenDataGov",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DumpJson",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/MongoDB_OpenDataGov')]",
+				"[concat(variables('workspaceId'), '/datasets/DumpJson')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_y26')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "DeeployerMongoAtlas",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "MongoDbAtlasCollection",
+				"schema": [],
+				"typeProperties": {
+					"collection": "teste"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/DeeployerMongoAtlas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DumpJson')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "asastorem3hx41t",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "test"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asastorem3hx41t')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MongoDB_OpenDataGov')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "DeeployerMongoAtlas",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "MongoDbAtlasCollection",
+				"schema": [],
+				"typeProperties": {
+					"collection": "detail_catalog"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/DeeployerMongoAtlas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_y26')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "asastorem3hx41t",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "data_0b455528-ef2c-4e8e-bb28-efe3c239348d_9f838fe4-b4f0-41e6-a0bd-b4a2facc6279.json",
+						"container": "test"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"_id": {
+							"type": "object",
+							"properties": {
+								"$oid": {
+									"type": "string"
+								}
+							}
+						},
+						"source": {
+							"type": "string"
+						},
+						"params": {
+							"type": "object",
+							"properties": {
+								"page": {
+									"type": "integer"
+								}
+							}
+						},
+						"page": {
+							"type": "integer"
+						},
+						"time_stamp_main": {
+							"type": "object",
+							"properties": {
+								"$date": {
+									"type": "integer"
+								}
+							}
+						},
+						"response_time_main": {
+							"type": "number"
+						},
+						"dataset_sequence": {
+							"type": "integer"
+						},
+						"dataset_name": {
+							"type": "string"
+						},
+						"dataset_description": {
+							"type": "string"
+						},
+						"dataset_link": {
+							"type": "string"
+						},
+						"dataset_tags": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"fonte": {
+							"type": "string"
+						},
+						"ultima atualizacao": {
+							"type": "object",
+							"properties": {
+								"$date": {
+									"type": "integer"
+								}
+							}
+						},
+						"criado": {
+							"type": "object",
+							"properties": {
+								"$date": {
+									"type": "integer"
+								}
+							}
+						},
+						"sources": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"title": {
+										"type": "string"
+									},
+									"link": {
+										"type": "string"
+									},
+									"data_format": {
+										"type": "string"
+									},
+									"description": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"number of sources": {
+							"type": "integer"
+						},
+						"organization": {
+							"type": "string"
+						},
+						"org_img_url": {
+							"type": "string"
+						},
+						"followers": {
+							"type": "integer"
+						},
+						"response_time": {
+							"type": "number"
+						},
+						"time_stamp": {
+							"type": "object",
+							"properties": {
+								"$date": {
+									"type": "integer"
+								}
+							}
+						},
+						"time_stamp_pipeline": {
+							"type": "string"
+						},
+						"autor": {
+							"type": "string"
+						},
+						"mantenedor": {
+							"type": "string"
+						},
+						"versao": {
+							"type": "string"
+						},
+						"spatial": {
+							"type": "string"
+						},
+						"orgao - esfera": {
+							"type": "string"
+						},
+						"orgao - poder": {
+							"type": "string"
+						},
+						"atualizacao": {
+							"type": "string"
+						},
+						"vcge": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asastorem3hx41t')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DeeployerMongoAtlas')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -197,25 +572,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/AzureIntegrationRuntime01')]",
-			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"type": "Managed",
-				"typeProperties": {
-					"computeProperties": {
-						"location": "AutoResolve",
-						"dataFlowProperties": {
-							"computeType": "MemoryOptimized",
-							"coreCount": 16,
-							"timeToLive": 60
-						}
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
 			"type": "Microsoft.Synapse/workspaces/credentials",
 			"apiVersion": "2019-06-01-preview",
@@ -322,126 +678,60 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/MongoDB_OpenDataGov')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "DeeployerMongoAtlas",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "MongoDbAtlasCollection",
-				"schema": [],
-				"typeProperties": {
-					"collection": "detail_catalog"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/DeeployerMongoAtlas')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/Pipeline_teste')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "MongoDbAtlasSource",
-								"batchSize": 100
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "MongoDB_OpenDataGov",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "BumJson",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/MongoDB_OpenDataGov')]",
-				"[concat(variables('workspaceId'), '/datasets/BumJson')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/BumJson')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "asastorem3hx41t",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "test"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/asastorem3hx41t')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalakem3hx41t.dfs.core.windows.net/wwi-02/campaign-analytics/sale-20161230-snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
+					"query": "\nIF NOT EXISTS (SELECT * FROM sys.symmetric_keys) BEGIN\n    declare @pasword nvarchar(400) = CAST(newid() as VARCHAR(400));\n    EXEC('CREATE MASTER KEY ENCRYPTION BY PASSWORD = ''' + @pasword + '''')\nEND\n \nCREATE DATABASE SCOPED CREDENTIAL [sqlondemand01]\nWITH IDENTITY='SHARED ACCESS SIGNATURE',  \nSECRET = 'sv=2018-03-28&ss=bf&srt=sco&sp=rl&st=2019-10-14T12%3A10%3A25Z&se=2061-12-31T12%3A10%3A00Z&sig=KlSU2ullCscyTS0An0nozEpo4tO5JAgGBvw%2FJX2lguw%3D'\nGO\n \n-- Create external data source secured using credential\nCREATE EXTERNAL DATA SOURCE SqlOnDemandDemo WITH (\n    LOCATION = 'https://sqlondemandstorage.blob.core.windows.net',\n    CREDENTIAL = sqlondemand\n);\nGO\n \nCREATE EXTERNAL FILE FORMAT QuotedCsvWithHeader\nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 2\n    )\n);\nGO\n \nCREATE EXTERNAL TABLE [population]\n(\n    [country_code] VARCHAR (5) COLLATE Latin1_General_BIN2,\n    [country_name] VARCHAR (100) COLLATE Latin1_General_BIN2,\n    [year] smallint,\n    [population] bigint\n)\nWITH (\n    LOCATION = 'csv/population/population.csv',\n    DATA_SOURCE = SqlOnDemandDemo,\n    FILE_FORMAT = QuotedCsvWithHeader\n);\nGO",
 					"metadata": {
 						"language": "sql"
 					},
 					"currentConnection": {
-						"databaseName": "master",
+						"databaseName": "Demo",
 						"poolName": "Built-in"
 					},
 					"resultLimit": 5000
 				},
 				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 2')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE VIEW CustomerInfo AS\n    SELECT * \nFROM OPENROWSET(\n        BULK 'https://asadatalakem3hx41t.dfs.core.windows.net/wwi-02/customer-info/customerinfo.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION='2.0',\n        FIRSTROW=2\n    )\n    WITH (\n    [UserName] NVARCHAR (50),\n    [Gender] NVARCHAR (10),\n    [Phone] NVARCHAR (50),\n    [Email] NVARCHAR (100),\n    [CreditCard] NVARCHAR (50)\n    ) AS [r];\n    GO\n \nSELECT * FROM CustomerInfo;\nGO",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Demo",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SparkPool01')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MySparkPool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
 			},
 			"dependsOn": []
 		}
