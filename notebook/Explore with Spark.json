@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "76c67907-d6e2-4e28-8055-db38b8d8ed66"
+				"spark.autotune.trackingId": "fd273c23-ee76-4c31-9598-12d3ceb10b48"
 			}
 		},
 		"metadata": {
@@ -66,7 +66,7 @@
 				"source": [
 					"adls_account_name = 'asadatalakem3hx41t'"
 				],
-				"execution_count": 2
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -85,7 +85,7 @@
 					"# and `inferSchema` instruct Spark to use data within the file to infer data types.\r\n",
 					"df = spark.read.load(f'abfss://wwi-02@{adls_account_name}.dfs.core.windows.net/sale-poc/sale-20170501.csv', format='csv', header=True, inferSchema=True)"
 				],
-				"execution_count": 3
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
