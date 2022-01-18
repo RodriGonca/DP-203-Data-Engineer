@@ -474,7 +474,7 @@
 						"spark.dynamicAllocation.enabled": "true",
 						"spark.dynamicAllocation.minExecutors": "1",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e2746caf-1c7d-4953-a0a2-d99c41533d95"
+						"spark.autotune.trackingId": "fd273c23-ee76-4c31-9598-12d3ceb10b48"
 					}
 				},
 				"metadata": {
@@ -499,15 +499,12 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": true
-					},
-					"sessionKeepAliveTimeout": 30
+						"memory": 56
+					}
 				},
 				"cells": [
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"# Exploring and fixing data with Synapse Spark\r\n",
 							"\r\n",
@@ -521,16 +518,14 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"adls_account_name = 'asadatalakem3hx41t'"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 1
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Exploring files with Spark\r\n",
 							"\r\n",
@@ -540,7 +535,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# First, load the file `sale-20170501.csv` file, which we know from our previous exploration to be formatted correctly.\r\n",
 							"# Note the use of the `header` and `inferSchema` parameters. Header indicates the first row of the file contains column headers,\r\n",
@@ -548,11 +542,10 @@
 							"df = spark.read.load(f'abfss://wwi-02@{adls_account_name}.dfs.core.windows.net/sale-poc/sale-20170501.csv', format='csv', header=True, inferSchema=True)"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 2
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## View the contents of the DataFrame\r\n",
 							"\r\n",
@@ -596,7 +589,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"2. Like we saw during exploration with the SQL on-demand capabilities of Azure Synapse, Spark allows us to view and query against the data contained within files. \r\n",
 							"\r\n",
@@ -605,7 +597,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# Now, print the inferred schema. We will need this information below to help with the missing headers in the May 2, 2017 file.\r\n",
 							"df.printSchema()"
@@ -615,7 +606,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"4. The **printSchema** method outputs both field names and data types that are based on the Spark engine's evaluation of the data contained within each field.\r\n",
 							"\r\n",
@@ -661,14 +651,12 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"6. Next, let's attempt to open and explore the **sale-20170502.csv** file using the **load()** method, as we did above."
 						]
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# Next, let's try to read in the May 2, 2017 file using the same `load()` method we used for the first file.\r\n",
 							"df = spark.read.load(f'abfss://wwi-02@{adls_account_name}.dfs.core.windows.net/sale-poc/sale-20170502.csv', format='csv')\r\n",
@@ -679,7 +667,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"7. As we saw in T-SQL, we receive a similar error in Spark that the number of columns processed may have exceeded limit of 20480 columns. To work with the data in this file, we need to use more advanced methods, as you will see in the next section below.\n",
 							""
@@ -687,7 +674,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Handling and fixing poorly formed CSV files\r\n",
 							"\r\n",
@@ -702,7 +688,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# Import the NumPy library. NumPy is a python library used for working with arrays.\r\n",
 							"import numpy as np\r\n",
@@ -715,14 +700,12 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"3. With the data now stored in an RDD, we can access the first, and only, populated row in the RDD, and split that into individual fields. We know from our inspection of the file in Notepad++ that it all the fields are separated by a comma (,), so let's start by splitting on that to create an array of field values. Execute the cell below to create a data array."
 						]
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# Since we know there is only one row, grab the first row of the RDD and split in on the field delimiter (comma).\r\n",
 							"data = rdd.first().split(',')\r\n",
@@ -736,7 +719,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"4. By splitting the row on the field delimiter, we created an array of all the individual field values in the file, the count of which you can see above.\n",
 							"\n",
@@ -745,7 +727,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"import math\r\n",
 							"\r\n",
@@ -757,7 +738,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"6. Next, let's create an array to store the data associated with each \"row\".\r\n",
 							"\r\n",
@@ -770,7 +750,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# Create an array to store the data associated with each \"row\". Set the max_index to the number of columns that are in each row. This is 11, which we noted above when viewing the schema of the May 1 file.\r\n",
 							"row_list = []\r\n",
@@ -790,7 +769,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"9. The last thing we need to do to be able to work with the file data as rows is to read it into a Spark DataFrame. In the cell below, we use the **createDataFrame()** method to convert the **row_list** array into a data frame, which also adding names for the columns. Column names are based on the schema we observed in the well formatted files in the **wwi-02/sale-poc** directory.\r\n",
 							"\r\n",
@@ -834,7 +812,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Write the \"fixed\" file into the data lake\r\n",
 							"\r\n",
@@ -848,7 +825,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"df_fixed.write.format('csv').option('header',True).mode('overwrite').option('sep',',').save(f'abfss://wwi-02@{adls_account_name}.dfs.core.windows.net/sale-poc/sale-20170502-fixed')"
 						],
@@ -857,7 +833,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Inspect the fixed file in the data lake\r\n",
 							"\r\n",
