@@ -2,13 +2,13 @@
 	"name": "SQL script 1",
 	"properties": {
 		"content": {
-			"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalakem3hx41t.dfs.core.windows.net/wwi-02/sale-poc/sale-20170501.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n",
+			"query": " -- Drop objects if they exist\n IF EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE [name] = 'HeavyLoader')\n BEGIN\n     DROP WORKLOAD CLASSIFIER HeavyLoader\n END;\n    \n IF EXISTS (SELECT * FROM sys.workload_management_workload_groups WHERE name = 'BigDataLoad')\n BEGIN\n     DROP WORKLOAD GROUP BigDataLoad\n END;\n    \n --Create workload group\n CREATE WORKLOAD GROUP BigDataLoad WITH\n   (\n       MIN_PERCENTAGE_RESOURCE = 50, -- integer value\n       REQUEST_MIN_RESOURCE_GRANT_PERCENT = 25, --  (guaranteed min 4 concurrency)\n       CAP_PERCENTAGE_RESOURCE = 100\n   );\n    \n -- Create workload classifier\n CREATE WORKLOAD Classifier HeavyLoader WITH\n (\n     Workload_Group ='BigDataLoad',\n     MemberName='asa.sql.import01',\n     IMPORTANCE = HIGH\n );\n    \n -- View classifiers\n SELECT * FROM sys.workload_management_workload_classifiers",
 			"metadata": {
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "master",
-				"poolName": "Built-in"
+				"databaseName": "SQLPool01",
+				"poolName": "SQLPool01"
 			},
 			"resultLimit": 5000
 		},
