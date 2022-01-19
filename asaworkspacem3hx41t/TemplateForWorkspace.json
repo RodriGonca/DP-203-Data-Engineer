@@ -644,6 +644,88 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_salesheap_asa')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sqlpool01",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "DP-203"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "TransactionId",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "CustomerId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductId",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "Quantity",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "Price",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 2
+					},
+					{
+						"name": "TotalAmount",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 2
+					},
+					{
+						"name": "TransactionDate",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProfitAmount",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 2
+					},
+					{
+						"name": "Hour",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "Minute",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "StoreId",
+						"type": "smallint",
+						"precision": 5
+					}
+				],
+				"typeProperties": {
+					"schema": "wwi_staging",
+					"table": "SaleHeap"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/sqlpool01')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/asal400_wwi_campaign_analytics_asa')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -746,88 +828,6 @@
 				"typeProperties": {
 					"schema": "wwi",
 					"table": "UserTopProductPurchases"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/sqlpool01')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/asal400_salesheap_asa')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sqlpool01",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "DP-203"
-				},
-				"annotations": [],
-				"type": "AzureSqlDWTable",
-				"schema": [
-					{
-						"name": "TransactionId",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "CustomerId",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ProductId",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "Quantity",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "Price",
-						"type": "decimal",
-						"precision": 9,
-						"scale": 2
-					},
-					{
-						"name": "TotalAmount",
-						"type": "decimal",
-						"precision": 9,
-						"scale": 2
-					},
-					{
-						"name": "TransactionDate",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ProfitAmount",
-						"type": "decimal",
-						"precision": 9,
-						"scale": 2
-					},
-					{
-						"name": "Hour",
-						"type": "tinyint",
-						"precision": 3
-					},
-					{
-						"name": "Minute",
-						"type": "tinyint",
-						"precision": 3
-					},
-					{
-						"name": "StoreId",
-						"type": "smallint",
-						"precision": 5
-					}
-				],
-				"typeProperties": {
-					"schema": "wwi_staging",
-					"table": "SaleHeap"
 				}
 			},
 			"dependsOn": [
@@ -1033,6 +1033,78 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/asal400_campaign_analytics_source')]",
 				"[concat(variables('workspaceId'), '/datasets/asal400_wwi_campaign_analytics_asa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/write_user_profile_to_asa')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "asal400_ecommerce_userprofiles_source",
+								"type": "DatasetReference"
+							},
+							"name": "EcommerceUserProfiles"
+						},
+						{
+							"dataset": {
+								"referenceName": "asal400_cosmosprofile_cosmosdb",
+								"type": "DatasetReference"
+							},
+							"name": "UserProfiles"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "asal400_wwi_usertopproductspurchase_asa",
+								"type": "DatasetReference"
+							},
+							"name": "UserTopProductPurchasesASA"
+						},
+						{
+							"linkedService": {
+								"referenceName": "asaworkspacem3hx41t-WorkspaceDefaultStorage",
+								"type": "LinkedServiceReference"
+							},
+							"name": "DataLake"
+						}
+					],
+					"transformations": [
+						{
+							"name": "userId"
+						},
+						{
+							"name": "UserTopProducts"
+						},
+						{
+							"name": "DeriveProductColumns"
+						},
+						{
+							"name": "UserPreferredProducts"
+						},
+						{
+							"name": "JoinTopProductsWithPreferredProducts"
+						},
+						{
+							"name": "DerivedColumnsForMerge"
+						},
+						{
+							"name": "Filter"
+						}
+					],
+					"script": "source(output(\n\t\tvisitorId as string,\n\t\ttopProductPurchases as (productId as string, itemsPurchasedLast12Months as string)[]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'arrayOfDocuments',\n\twildcardPaths:['online-user-profiles-02/*.json']) ~> EcommerceUserProfiles\nsource(output(\n\t\tuserId as integer,\n\t\tcartId as string,\n\t\tpreferredProducts as integer[],\n\t\tproductReviews as (productId as integer, reviewText as string, reviewDate as string)[]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'document') ~> UserProfiles\nEcommerceUserProfiles derive(visitorId = toInteger(visitorId)) ~> userId\nuserId foldDown(unroll(topProductPurchases),\n\tmapColumn(\n\t\tvisitorId,\n\t\tproductid = topProductPurchases.productId,\n\t\titemsPurchasedLast12Months = topProductPurchases.itemsPurchasedLast12Months\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> UserTopProducts\nUserTopProducts derive(productid = toInteger(productid),\n\t\titemsPurchasedLast12Months = toInteger(itemsPurchasedLast12Months)) ~> DeriveProductColumns\nUserProfiles foldDown(unroll(preferredProducts),\n\tmapColumn(\n\t\tpreferredProducts,\n\t\tuserId\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> UserPreferredProducts\nDeriveProductColumns, UserPreferredProducts join(visitorId == userId,\n\tjoinType:'outer',\n\tpartitionBy('hash', 30,\n\t\tproductid\n\t),\n\tbroadcast: 'left')~> JoinTopProductsWithPreferredProducts\nJoinTopProductsWithPreferredProducts derive(isTopProduct = toBoolean(iif(isNull(productid), 'false', 'true')),\n\t\tisPreferredProduct = toBoolean(iif(isNull(preferredProducts), 'false', 'true')),\n\t\tproductid = iif(isNull(productid), preferredProducts, productid),\n\t\tuserId = iif(isNull(userId), visitorId, userId)) ~> DerivedColumnsForMerge\nDerivedColumnsForMerge filter(!isNull(productid)) ~> Filter\nFilter sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tUserId as integer,\n\t\tProductId as integer,\n\t\tItemsPurchasedLast12Months as integer,\n\t\tIsTopProduct as boolean,\n\t\tIsPreferredProduct as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tUserId = userId,\n\t\tProductId = productid,\n\t\tItemsPurchasedLast12Months = itemsPurchasedLast12Months,\n\t\tIsTopProduct = isTopProduct,\n\t\tIsPreferredProduct = isPreferredProduct\n\t)) ~> UserTopProductPurchasesASA\nFilter sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcompressionType: 'snappy',\n\tcompressionLevel: 'Fastest',\n\tfileSystem: 'wwi-02',\n\tfolderPath: 'top-products',\n\ttruncate:true,\n\tmergeSchema: false,\n\tautoCompact: false,\n\toptimizedWrite: false,\n\tvacuum: 0,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tvisitorId,\n\t\tproductid,\n\t\titemsPurchasedLast12Months,\n\t\tpreferredProducts,\n\t\tuserId,\n\t\tisTopProduct,\n\t\tisPreferredProduct\n\t)) ~> DataLake"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/asal400_ecommerce_userprofiles_source')]",
+				"[concat(variables('workspaceId'), '/datasets/asal400_cosmosprofile_cosmosdb')]",
+				"[concat(variables('workspaceId'), '/datasets/asal400_wwi_usertopproductspurchase_asa')]",
+				"[concat(variables('workspaceId'), '/linkedServices/asaworkspacem3hx41t-WorkspaceDefaultStorage')]"
 			]
 		},
 		{
