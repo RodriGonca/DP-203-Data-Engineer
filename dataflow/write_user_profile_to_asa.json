@@ -1,0 +1,20 @@
+{
+	"name": "write_user_profile_to_asa",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "asal400_ecommerce_userprofiles_source",
+						"type": "DatasetReference"
+					},
+					"name": "EcommerceUserProfiles"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"script": "source(output(\n\t\tvisitorId as integer,\n\t\ttopProductPurchases as (productId as integer, itemsPurchasedLast12Months as integer)[]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'arrayOfDocuments',\n\twildcardPaths:['online-user-profiles-02/*.json']) ~> EcommerceUserProfiles"
+		}
+	}
+}
