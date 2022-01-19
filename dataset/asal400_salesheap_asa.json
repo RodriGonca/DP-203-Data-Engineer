@@ -1,9 +1,12 @@
 {
-	"name": "table_synapse_lab",
+	"name": "asal400_salesheap_asa",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "sqlpool01",
 			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DP-203"
 		},
 		"annotations": [],
 		"type": "AzureSqlDWTable",
