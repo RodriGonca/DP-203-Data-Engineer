@@ -354,6 +354,65 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Write User Profile Data to ASA')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "write_user_profile_to_asa",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "write_user_profile_to_asa",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"EcommerceUserProfiles": {},
+									"UserProfiles": {},
+									"UserTopProductPurchasesASA": {},
+									"DataLake": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "asadatalakem3hx41t",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "staging/userprofiles"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "DP-203"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/write_user_profile_to_asa')]",
+				"[concat(variables('workspaceId'), '/linkedServices/asadatalakem3hx41t')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DumpJson')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
