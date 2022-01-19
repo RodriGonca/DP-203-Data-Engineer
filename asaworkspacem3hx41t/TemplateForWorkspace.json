@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'DeeployerMongoAtlas'"
 		},
+		"asacosmosdb01_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'asacosmosdb01'"
+		},
 		"asadatalakem3hx41t_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'asadatalakem3hx41t'"
@@ -48,6 +52,24 @@
 		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/SparkPool01')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MySparkPool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/Lab_20220118')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
@@ -208,7 +230,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "AzureSynapseAnalyticsTable1",
+								"referenceName": "table_synapse_lab",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -223,7 +245,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/asal400_december_sales')]",
-				"[concat(variables('workspaceId'), '/datasets/AzureSynapseAnalyticsTable1')]"
+				"[concat(variables('workspaceId'), '/datasets/table_synapse_lab')]"
 			]
 		},
 		{
@@ -297,85 +319,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/AzureSynapseAnalyticsTable1')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sqlpool01",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlDWTable",
-				"schema": [
-					{
-						"name": "TransactionId",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "CustomerId",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ProductId",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "Quantity",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "Price",
-						"type": "decimal",
-						"precision": 9,
-						"scale": 2
-					},
-					{
-						"name": "TotalAmount",
-						"type": "decimal",
-						"precision": 9,
-						"scale": 2
-					},
-					{
-						"name": "TransactionDate",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ProfitAmount",
-						"type": "decimal",
-						"precision": 9,
-						"scale": 2
-					},
-					{
-						"name": "Hour",
-						"type": "tinyint",
-						"precision": 3
-					},
-					{
-						"name": "Minute",
-						"type": "tinyint",
-						"precision": 3
-					},
-					{
-						"name": "StoreId",
-						"type": "smallint",
-						"precision": 5
-					}
-				],
-				"typeProperties": {
-					"schema": "wwi_staging",
-					"table": "SaleHeap"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/sqlpool01')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/DumpJson')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -416,6 +359,59 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/DeeployerMongoAtlas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_cosmosprofile_cosmosdb')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "asacosmosdb01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"userId": {
+							"type": "integer"
+						},
+						"cartId": {
+							"type": "string"
+						},
+						"preferredProducts": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"productReviews": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"productId": {
+										"type": "integer"
+									},
+									"reviewText": {
+										"type": "string"
+									},
+									"reviewDate": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"typeProperties": {
+					"collectionName": "OnlineUserProfile01"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asacosmosdb01')]"
 			]
 		},
 		{
@@ -496,6 +492,130 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/asal400_ecommerce_userprofiles_source')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "asadatalakem3hx41t",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "online-user-profiles-02",
+						"fileSystem": "wwi-02"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"visitorId": {
+							"type": "integer"
+						},
+						"topProductPurchases": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"productId": {
+										"type": "integer"
+									},
+									"itemsPurchasedLast12Months": {
+										"type": "integer"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asadatalakem3hx41t')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/table_synapse_lab')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sqlpool01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "TransactionId",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "CustomerId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductId",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "Quantity",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "Price",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 2
+					},
+					{
+						"name": "TotalAmount",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 2
+					},
+					{
+						"name": "TransactionDate",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProfitAmount",
+						"type": "decimal",
+						"precision": 9,
+						"scale": 2
+					},
+					{
+						"name": "Hour",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "Minute",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "StoreId",
+						"type": "smallint",
+						"precision": 5
+					}
+				],
+				"typeProperties": {
+					"schema": "wwi_staging",
+					"table": "SaleHeap"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/sqlpool01')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DeeployerMongoAtlas')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -505,6 +625,25 @@
 				"typeProperties": {
 					"connectionString": "[parameters('DeeployerMongoAtlas_connectionString')]",
 					"database": "[parameters('DeeployerMongoAtlas_properties_typeProperties_database')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asacosmosdb01')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "CosmosDb",
+				"typeProperties": {
+					"connectionString": "[parameters('asacosmosdb01_connectionString')]"
 				},
 				"connectVia": {
 					"referenceName": "AutoResolveIntegrationRuntime",
@@ -707,6 +846,26 @@
 			"properties": {
 				"content": {
 					"query": " CREATE TABLE [wwi_staging].[Sale]\n (\n     [TransactionId] [uniqueidentifier]  NOT NULL,\n     [CustomerId] [int]  NOT NULL,\n     [ProductId] [smallint]  NOT NULL,\n     [Quantity] [smallint]  NOT NULL,\n     [Price] [decimal](9,2)  NOT NULL,\n     [TotalAmount] [decimal](9,2)  NOT NULL,\n     [TransactionDate] [int]  NOT NULL,\n     [ProfitAmount] [decimal](9,2)  NOT NULL,\n     [Hour] [tinyint]  NOT NULL,\n     [Minute] [tinyint]  NOT NULL,\n     [StoreId] [smallint]  NOT NULL\n )\n WITH\n (\n     DISTRIBUTION = HASH ( [CustomerId] ),\n     CLUSTERED COLUMNSTORE INDEX,\n     PARTITION\n     (\n         [TransactionDate] RANGE RIGHT FOR VALUES (20100101, 20100201, 20100301, 20100401, 20100501, 20100601, \n                                                    20100701, 20100801, 20100901, 20101001, 20101101, 20101201, \n                                                    20110101, 20110201, 20110301, 20110401, 20110501, 20110601, \n                                                    20110701, 20110801, 20110901, 20111001, 20111101, 20111201, \n                                                    20120101, 20120201, 20120301, 20120401, 20120501, 20120601, \n                                                    20120701, 20120801, 20120901, 20121001, 20121101, 20121201, \n                                                    20130101, 20130201, 20130301, 20130401, 20130501, 20130601, \n                                                    20130701, 20130801, 20130901, 20131001, 20131101, 20131201, \n                                                    20140101, 20140201, 20140301, 20140401, 20140501, 20140601, \n                                                    20140701, 20140801, 20140901, 20141001, 20141101, 20141201, \n                                                    20150101, 20150201, 20150301, 20150401, 20150501, 20150601, \n                                                    20150701, 20150801, 20150901, 20151001, 20151101, 20151201, \n                                                    20160101, 20160201, 20160301, 20160401, 20160501, 20160601, \n                                                    20160701, 20160801, 20160901, 20161001, 20161101, 20161201, \n                                                    20170101, 20170201, 20170301, 20170401, 20170501, 20170601, \n                                                    20170701, 20170801, 20170901, 20171001, 20171101, 20171201, \n                                                    20180101, 20180201, 20180301, 20180401, 20180501, 20180601, \n                                                    20180701, 20180801, 20180901, 20181001, 20181101, 20181201, \n                                                    20190101, 20190201, 20190301, 20190401, 20190501, 20190601, \n                                                    20190701, 20190801, 20190901, 20191001, 20191101, 20191201)\n     )\n )\n\n-- Replace SUFFIX with the lab workspace id. \nDROP EXTERNAL DATA SOURCE [ABSS]\nCREATE EXTERNAL DATA SOURCE ABSS\nWITH ( TYPE = HADOOP, \n       LOCATION = 'abfss://wwi-02@asadatalakem3hx41t.dfs.core.windows.net' );\n\n CREATE EXTERNAL FILE FORMAT [ParquetFormat]\n WITH (\n     FORMAT_TYPE = PARQUET,\n     DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n )\n GO\n \n CREATE SCHEMA [wwi_external];\n GO\n \n CREATE EXTERNAL TABLE [wwi_external].Sales\n     (\n         [TransactionId] [nvarchar](36)  NOT NULL,\n         [CustomerId] [int]  NOT NULL,\n         [ProductId] [smallint]  NOT NULL,\n         [Quantity] [smallint]  NOT NULL,\n         [Price] [decimal](9,2)  NOT NULL,\n         [TotalAmount] [decimal](9,2)  NOT NULL,\n         [TransactionDate] [int]  NOT NULL,\n         [ProfitAmount] [decimal](9,2)  NOT NULL,\n         [Hour] [tinyint]  NOT NULL,\n         [Minute] [tinyint]  NOT NULL,\n         [StoreId] [smallint]  NOT NULL\n     )\n WITH\n     (\n         LOCATION = '/sale-small/Year=2019',  \n         DATA_SOURCE = ABSS,\n         FILE_FORMAT = [ParquetFormat]  \n     )  \n GO\n\nINSERT INTO [wwi_staging].[SaleHeap] \nSELECT * FROM [wwi_external].[Sales]\n\nSELECT COUNT(1) FROM [wwi_staging].[SaleHeap](nolock)\n\nTRUNCATE TABLE [wwi_staging].[SaleHeap]\n\nCOPY INTO wwi_staging.SaleHeap\n FROM 'https://asadatalakem3hx41t.dfs.core.windows.net/wwi-02/sale-small/Year=2019'\n WITH (\n     FILE_TYPE = 'PARQUET',\n     COMPRESSION = 'SNAPPY'\n )\n GO\n\n-------------------------------------------------------------------------------------\n\n CREATE TABLE [wwi_staging].DailySalesCounts\n     (\n         [Date] [int]  NOT NULL,\n         [NorthAmerica] [int]  NOT NULL,\n         [SouthAmerica] [int]  NOT NULL,\n         [Europe] [int]  NOT NULL,\n         [Africa] [int]  NOT NULL,\n         [Asia] [int]  NOT NULL\n     )\n GO\n \n -- Replace SUFFIX with the unique suffix for your resources\n COPY INTO wwi_staging.DailySalesCounts\n FROM 'https://asadatalakem3hx41t.dfs.core.windows.net/wwi-02/campaign-analytics/dailycounts.txt'\n WITH (\n     FILE_TYPE = 'CSV',\n     FIELDTERMINATOR='.',\n     ROWTERMINATOR=','\n )\n GO\n\nSELECT * FROM [wwi_staging].DailySalesCounts\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SQLPool01",
+						"poolName": "SQLPool01"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Lab_20220118_2')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": " CREATE TABLE [wwi].[UserTopProductPurchases]\n (\n     [UserId] [int]  NOT NULL,\n     [ProductId] [int]  NOT NULL,\n     [ItemsPurchasedLast12Months] [int]  NULL,\n     [IsTopProduct] [bit]  NOT NULL,\n     [IsPreferredProduct] [bit]  NOT NULL\n )\n WITH\n (\n     DISTRIBUTION = HASH ( [UserId] ),\n     CLUSTERED COLUMNSTORE INDEX\n )\n\nCREATE TABLE [wwi].[CampaignAnalytics]\n (\n     [Region] [nvarchar](50)  NOT NULL,\n     [Country] [nvarchar](30)  NOT NULL,\n     [ProductCategory] [nvarchar](50)  NOT NULL,\n     [CampaignName] [nvarchar](500)  NOT NULL,\n     [Revenue] [decimal](10,2)  NULL,\n     [RevenueTarget] [decimal](10,2)  NULL,\n     [City] [nvarchar](50)  NULL,\n     [State] [nvarchar](25)  NULL\n )\n WITH\n (\n     DISTRIBUTION = HASH ( [Region] ),\n     CLUSTERED COLUMNSTORE INDEX\n )\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -1209,44 +1368,6 @@
 			},
 			"dependsOn": [],
 			"location": "westus"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/SparkPool01')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/MySparkPool')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/Lab_20220118_2')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": " CREATE TABLE [wwi].[UserTopProductPurchases]\n (\n     [UserId] [int]  NOT NULL,\n     [ProductId] [int]  NOT NULL,\n     [ItemsPurchasedLast12Months] [int]  NULL,\n     [IsTopProduct] [bit]  NOT NULL,\n     [IsPreferredProduct] [bit]  NOT NULL\n )\n WITH\n (\n     DISTRIBUTION = HASH ( [UserId] ),\n     CLUSTERED COLUMNSTORE INDEX\n )\n\nCREATE TABLE [wwi].[CampaignAnalytics]\n (\n     [Region] [nvarchar](50)  NOT NULL,\n     [Country] [nvarchar](30)  NOT NULL,\n     [ProductCategory] [nvarchar](50)  NOT NULL,\n     [CampaignName] [nvarchar](500)  NOT NULL,\n     [Revenue] [decimal](10,2)  NULL,\n     [RevenueTarget] [decimal](10,2)  NULL,\n     [City] [nvarchar](50)  NULL,\n     [State] [nvarchar](25)  NULL\n )\n WITH\n (\n     DISTRIBUTION = HASH ( [Region] ),\n     CLUSTERED COLUMNSTORE INDEX\n )",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "SQLPool01",
-						"poolName": "SQLPool01"
-					},
-					"resultLimit": 5000
-				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
 		}
 	]
 }

@@ -8,6 +8,9 @@
 		"DeeployerMongoAtlas_connectionString": {
 			"value": ""
 		},
+		"asacosmosdb01_connectionString": {
+			"value": ""
+		},
 		"asadatalakem3hx41t_accountKey": {
 			"value": ""
 		},
