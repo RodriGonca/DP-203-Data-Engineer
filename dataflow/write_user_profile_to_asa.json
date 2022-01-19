@@ -1,0 +1,33 @@
+{
+	"name": "write_user_profile_to_asa",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "asal400_ecommerce_userprofiles_source",
+						"type": "DatasetReference"
+					},
+					"name": "EcommerceUserProfiles"
+				},
+				{
+					"name": "UserProfiles"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "userId"
+				},
+				{
+					"name": "UserTopProducts"
+				},
+				{
+					"name": "DeriveProductColumns"
+				}
+			],
+			"script": "source(output(\n\t\tvisitorId as string,\n\t\ttopProductPurchases as (productId as string, itemsPurchasedLast12Months as string)[]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'arrayOfDocuments',\n\twildcardPaths:['online-user-profiles-02/*.json']) ~> EcommerceUserProfiles\nsource(output(\n\t\tuserId as string,\n\t\tcartId as string,\n\t\tpreferredProducts as string[],\n\t\tproductReviews as (productId as string, reviewText as string, reviewDate as string)[]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> UserProfiles\nEcommerceUserProfiles derive(visitorId = toInteger(visitorId)) ~> userId\nuserId foldDown(unroll(topProductPurchases),\n\tmapColumn(\n\t\tvisitorId,\n\t\tproductid = topProductPurchases.productId,\n\t\titemsPurchasedLast12Months = topProductPurchases.itemsPurchasedLast12Months\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> UserTopProducts\nUserTopProducts derive(productid = toInteger(productid),\n\t\titemsPurchasedLast12Months = toInteger(itemsPurchasedLast12Months)) ~> DeriveProductColumns"
+		}
+	}
+}
