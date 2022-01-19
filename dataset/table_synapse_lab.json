@@ -1,5 +1,5 @@
 {
-	"name": "AzureSynapseAnalyticsTable1",
+	"name": "table_synapse_lab",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "sqlpool01",

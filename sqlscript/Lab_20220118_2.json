@@ -2,7 +2,7 @@
 	"name": "Lab_20220118_2",
 	"properties": {
 		"content": {
-			"query": " CREATE TABLE [wwi].[UserTopProductPurchases]\n (\n     [UserId] [int]  NOT NULL,\n     [ProductId] [int]  NOT NULL,\n     [ItemsPurchasedLast12Months] [int]  NULL,\n     [IsTopProduct] [bit]  NOT NULL,\n     [IsPreferredProduct] [bit]  NOT NULL\n )\n WITH\n (\n     DISTRIBUTION = HASH ( [UserId] ),\n     CLUSTERED COLUMNSTORE INDEX\n )\n\nCREATE TABLE [wwi].[CampaignAnalytics]\n (\n     [Region] [nvarchar](50)  NOT NULL,\n     [Country] [nvarchar](30)  NOT NULL,\n     [ProductCategory] [nvarchar](50)  NOT NULL,\n     [CampaignName] [nvarchar](500)  NOT NULL,\n     [Revenue] [decimal](10,2)  NULL,\n     [RevenueTarget] [decimal](10,2)  NULL,\n     [City] [nvarchar](50)  NULL,\n     [State] [nvarchar](25)  NULL\n )\n WITH\n (\n     DISTRIBUTION = HASH ( [Region] ),\n     CLUSTERED COLUMNSTORE INDEX\n )",
+			"query": " CREATE TABLE [wwi].[UserTopProductPurchases]\n (\n     [UserId] [int]  NOT NULL,\n     [ProductId] [int]  NOT NULL,\n     [ItemsPurchasedLast12Months] [int]  NULL,\n     [IsTopProduct] [bit]  NOT NULL,\n     [IsPreferredProduct] [bit]  NOT NULL\n )\n WITH\n (\n     DISTRIBUTION = HASH ( [UserId] ),\n     CLUSTERED COLUMNSTORE INDEX\n )\n\nCREATE TABLE [wwi].[CampaignAnalytics]\n (\n     [Region] [nvarchar](50)  NOT NULL,\n     [Country] [nvarchar](30)  NOT NULL,\n     [ProductCategory] [nvarchar](50)  NOT NULL,\n     [CampaignName] [nvarchar](500)  NOT NULL,\n     [Revenue] [decimal](10,2)  NULL,\n     [RevenueTarget] [decimal](10,2)  NULL,\n     [City] [nvarchar](50)  NULL,\n     [State] [nvarchar](25)  NULL\n )\n WITH\n (\n     DISTRIBUTION = HASH ( [Region] ),\n     CLUSTERED COLUMNSTORE INDEX\n )\n",
 			"metadata": {
 				"language": "sql"
 			},
