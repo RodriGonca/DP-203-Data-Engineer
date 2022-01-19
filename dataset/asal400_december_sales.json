@@ -5,6 +5,9 @@
 			"referenceName": "asadatalakem3hx41t",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "DP-203"
+		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {

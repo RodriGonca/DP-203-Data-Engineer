@@ -154,7 +154,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "table_synapse_lab",
+						"referenceName": "asal400_salesheap_asa",
 						"type": "DatasetReference"
 					}
 				]

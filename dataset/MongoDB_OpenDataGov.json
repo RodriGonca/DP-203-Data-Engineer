@@ -5,6 +5,9 @@
 			"referenceName": "DeeployerMongoAtlas",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "MyTestes"
+		},
 		"annotations": [],
 		"type": "MongoDbAtlasCollection",
 		"schema": [],

@@ -5,6 +5,9 @@
 			"referenceName": "asacosmosdb01",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "DP-203"
+		},
 		"annotations": [],
 		"type": "CosmosDbSqlApiCollection",
 		"schema": {

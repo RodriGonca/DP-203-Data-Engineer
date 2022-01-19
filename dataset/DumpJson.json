@@ -5,6 +5,9 @@
 			"referenceName": "asastorem3hx41t",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "MyTestes"
+		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {

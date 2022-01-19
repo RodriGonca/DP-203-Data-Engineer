@@ -5,6 +5,9 @@
 			"referenceName": "sqlpool01",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "DP-203"
+		},
 		"annotations": [],
 		"type": "AzureSqlDWTable",
 		"schema": [
