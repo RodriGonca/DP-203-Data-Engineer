@@ -13,8 +13,15 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
-			"script": "source(output(\n\t\tvisitorId as integer,\n\t\ttopProductPurchases as (productId as integer, itemsPurchasedLast12Months as integer)[]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'arrayOfDocuments',\n\twildcardPaths:['online-user-profiles-02/*.json']) ~> EcommerceUserProfiles"
+			"transformations": [
+				{
+					"name": "userid"
+				},
+				{
+					"name": "UserTopProducts"
+				}
+			],
+			"script": "source(output(\n\t\tvisitorId as integer,\n\t\ttopProductPurchases as (productId as integer, itemsPurchasedLast12Months as integer)[]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'arrayOfDocuments',\n\twildcardPaths:['online-user-profiles-02/*.json']) ~> EcommerceUserProfiles\nEcommerceUserProfiles derive(visitorId = toInteger(visitorId)) ~> userid\nuserid foldDown(unroll(topProductPurchases),\n\tmapColumn(\n\t\tvisitorId,\n\t\tproductId = topProductPurchases.productId,\n\t\titemsPurchasedLast12Months = topProductPurchases.itemsPurchasedLast12Months\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> UserTopProducts"
 		}
 	}
 }
