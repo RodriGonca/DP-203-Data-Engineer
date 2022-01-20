@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "29f31e8c-c9ba-4f67-9fbb-be80614db197"
+				"spark.autotune.trackingId": "58650225-8a47-4623-841c-566b2f2c95e3"
 			}
 		},
 		"metadata": {
@@ -77,9 +77,17 @@
 					}
 				},
 				"source": [
-					"df.count()"
+					"topPurchases = df.select(\r\n",
+					"     \"UserId\", \"ProductId\",\r\n",
+					"     \"ItemsPurchasedLast12Months\", \"IsTopProduct\",\r\n",
+					"     \"IsPreferredProduct\")\r\n",
+					"\r\n",
+					" # Populate a temporary view so we can query from SQL\r\n",
+					"topPurchases.createOrReplaceTempView(\"top_purchases\")\r\n",
+					"\r\n",
+					"topPurchases.show(100)"
 				],
-				"execution_count": 4
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -95,9 +103,155 @@
 					}
 				},
 				"source": [
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"topPreferredProducts = (topPurchases\r\n",
+					"    .filter( col(\"IsTopProduct\") == True)\r\n",
+					"    .filter( col(\"IsPreferredProduct\") == True)\r\n",
+					"    .orderBy( col(\"ItemsPurchasedLast12Months\").desc() ))\r\n",
+					"\r\n",
+					"topPreferredProducts.show(100)"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"\r\n",
+					"CREATE OR REPLACE TEMPORARY VIEW top_5_products\r\n",
+					"AS\r\n",
+					"    select UserId, ProductId, ItemsPurchasedLast12Months\r\n",
+					"    from (select *,\r\n",
+					"                row_number() over (partition by UserId order by ItemsPurchasedLast12Months desc) as seqnum\r\n",
+					"        from top_purchases\r\n",
+					"        ) a\r\n",
+					"    where seqnum <= 5 and IsTopProduct == true and IsPreferredProduct = true\r\n",
+					"    order by a.UserId"
+				],
+				"execution_count": 13
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"top5Products = sqlContext.table(\"top_5_products\")\r\n",
+					"\r\n",
+					"top5Products.show(100)"
+				],
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"print('before filter: ', topPreferredProducts.count(), ', after filter: ', top5Products.count())"
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"top5ProductsOverall = (top5Products.select(\"ProductId\",\"ItemsPurchasedLast12Months\")\r\n",
+					"    .groupBy(\"ProductId\")\r\n",
+					"    .agg( sum(\"ItemsPurchasedLast12Months\").alias(\"Total\") )\r\n",
+					"    .orderBy( col(\"Total\").desc() )\r\n",
+					"    .limit(5))\r\n",
+					"\r\n",
+					"top5ProductsOverall.show()"
+				],
+				"execution_count": 15
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import uuid\r\n",
+					"\r\n",
+					"# Generate random GUID\r\n",
+					"runId = uuid.uuid4()"
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"\r\n",
+					"top5ProductsOverall.write.parquet('abfss://wwi-02@asadatalakem3hx41t.dfs.core.windows.net/top5-products/' + str(runId) + '.parquet')\r\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 17
 			}
 		]
 	}
