@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "asal400_lab2_writecampaignanalyticstoasa",
+						"referenceName": "Write Campaign Analytics to ASA",
 						"type": "DataFlowReference"
 					},
 					"compute": {

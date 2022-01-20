@@ -1,5 +1,5 @@
 {
-	"name": "asal400_lab2_writecampaignanalyticstoasa",
+	"name": "Write Campaign Analytics to ASA",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
